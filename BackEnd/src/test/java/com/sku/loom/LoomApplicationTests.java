@@ -1,10 +1,10 @@
-package org.sku.loom;
+package com.sku.loom;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BackendApplicationTests {
+class LoomApplicationTests {
 
     @Test
     void contextLoads() {

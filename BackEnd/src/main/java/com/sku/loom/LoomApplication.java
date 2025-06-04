@@ -1,13 +1,13 @@
-package org.sku.loom;
+package com.sku.loom;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BackendApplication {
+public class LoomApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BackendApplication.class, args);
+        SpringApplication.run(LoomApplication.class, args);
     }
 
 }
