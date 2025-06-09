@@ -9,6 +9,7 @@ import com.sku.loom.domain.workspace.entity.role.WorkSpaceProfileRole;
 import com.sku.loom.domain.workspace.repository.WorkspaceProfileJpaRepository;
 import com.sku.loom.domain.workspace.repository.WorkspaceRepository;
 import com.sku.loom.global.exception.user.NotFoundUserException;
+import com.sku.loom.global.exception.workspace.NotFoundWorkspaceException;
 import com.sku.loom.global.service.s3.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -41,12 +42,12 @@ public class WorkspaceServiceImpl implements WorkspaceService{
     @Transactional
     public void postWorkspace(long userId, String workspaceName, MultipartFile image) throws IOException {
         // CREATE WORKSPACES
+        Timestamp now = new Timestamp(System.currentTimeMillis());
         String workspaceImg = "WORKSPACE BASIC S3 URL";
 
         if(image != null && !image.isEmpty())
             workspaceImg = s3Service.uploadS3(image, "/workspaces/img");
 
-        Timestamp now = new Timestamp(System.currentTimeMillis());
         Workspaces newWorkspace = Workspaces.builder()
                 .workspaceName(workspaceName)
                 .workspaceImg(workspaceImg)
@@ -66,7 +67,31 @@ public class WorkspaceServiceImpl implements WorkspaceService{
                 .user(user)
                 .workspace(newWorkspace)
                 .workspaceProfileName(user.getUserEmail().split("@")[0])
+                .workspaceProfileImg(workspaceProfileImg)
                 .workSpaceProfileRole(WorkSpaceProfileRole.OWNER)
+                .workspaceProfileCreatedAt(now)
+                .workspaceProfileUpdatedAt(now)
+                .build();
+
+        workspaceProfileJpaRepository.save(newWorkspaceProfile);
+    }
+
+    @Override
+    @Transactional
+    public void postWorkspaceJoin(long userId, String workspaceCode) {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        String workspaceProfileImg = "WORKSPACE PROFILES BASIC S3 URL";
+        Users newUser = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new NotFoundUserException());
+        Workspaces workspace = workspaceRepository.findByWorkspaceCode(workspaceCode)
+                .orElseThrow(() -> new NotFoundWorkspaceException());
+
+        WorkspaceProfiles newWorkspaceProfile = WorkspaceProfiles.builder()
+                .user(newUser)
+                .workspace(workspace)
+                .workspaceProfileName(newUser.getUserEmail().split("@")[0])
+                .workspaceProfileImg(workspaceProfileImg)
+                .workSpaceProfileRole(WorkSpaceProfileRole.MEMBER)
                 .workspaceProfileCreatedAt(now)
                 .workspaceProfileUpdatedAt(now)
                 .build();

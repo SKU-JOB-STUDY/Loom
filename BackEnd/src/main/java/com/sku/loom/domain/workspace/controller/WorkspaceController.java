@@ -43,4 +43,13 @@ public class WorkspaceController {
 
         return ResponseEntity.ok(BaseResponse.create(HttpStatus.CREATED.value(), "워크스페이스를 성공적으로 생성했습니다."));
     }
+
+    @PostMapping("/join")
+    @Operation(summary = "워크스페이스 참여", description = "워크스페이스를 통해 회원이 워크스페이스 참여")
+    public ResponseEntity<BaseResponse<Void>> postWorkspaceJoin(Authentication authentication,
+                                                                @RequestParam("workspaceCode") String workspaceCode) {
+        workspaceService.postWorkspaceJoin(Long.parseLong(authentication.getName()), workspaceCode);
+
+        return ResponseEntity.ok(BaseResponse.create(HttpStatus.OK.value(), "워크스페이스에 성공적으로 참여했습니다."));
+    }
 }

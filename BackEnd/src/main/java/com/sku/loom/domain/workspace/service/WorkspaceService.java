@@ -10,4 +10,6 @@ public interface WorkspaceService {
     List<WorkspaceResponse> getWorkspaces(Long userId);
 
     void postWorkspace(long userId, String workspaceName, MultipartFile image) throws IOException;
+
+    void postWorkspaceJoin(long userId, String workspaceCode);
 }

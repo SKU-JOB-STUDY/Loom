@@ -17,11 +17,14 @@ public enum ErrorDetail {
     INVALID_TOKEN("T0007", HttpStatus.UNAUTHORIZED, "유효하지 않은 JWT 토큰입니다."),
     INVALID_REFRESH_TOKEN("T0008", HttpStatus.BAD_REQUEST, "리프레쉬 토큰이 만료 되었거나 유효하지 않습니다."),
 
-    // S3
-    NOT_FOUND_S3_FILE("S0001", HttpStatus.NOT_FOUND, "S3에 파일이 존재하지 않습니다."),
-
     // User
-    NOT_FOUND_USER("U0001", HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다.");
+    NOT_FOUND_USER("U0001", HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
+
+    // Workspace
+    NOT_FOUND_WORKSPACE("W0001", HttpStatus.NOT_FOUND, "워크스페이스를 찾을 수 없습니다."),
+
+    // S3
+    NOT_FOUND_S3_FILE("S0001", HttpStatus.NOT_FOUND, "S3에 파일이 존재하지 않습니다.");
 
     private final String errorCode;
     private final HttpStatus httpStatus;
