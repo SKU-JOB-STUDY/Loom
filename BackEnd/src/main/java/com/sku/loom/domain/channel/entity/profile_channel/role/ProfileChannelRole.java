@@ -1,18 +1,19 @@
-package com.sku.loom.domain.workspace.entity.role;
+package com.sku.loom.domain.channel.entity.profile_channel.role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum WorkSpaceProfileRole {
+public enum ProfileChannelRole {
     MEMBER(0),
-    OWNER(1);
+    ADMIN(1),
+    OWNER(2);
 
     private final int code;
 
-    public static WorkSpaceProfileRole fromCode(int code) {
-        for (WorkSpaceProfileRole role : values()) {
+    public static ProfileChannelRole fromCode(int code) {
+        for (ProfileChannelRole role : values()) {
             if (role.code == code) {
                 return role;
             }

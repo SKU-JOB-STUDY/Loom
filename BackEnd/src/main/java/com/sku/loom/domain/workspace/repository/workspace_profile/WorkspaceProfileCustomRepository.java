@@ -1,4 +1,4 @@
-package com.sku.loom.domain.workspace.repository;
+package com.sku.loom.domain.workspace.repository.workspace_profile;
 
 import com.sku.loom.domain.workspace.dto.response.WorkspaceResponse;
 

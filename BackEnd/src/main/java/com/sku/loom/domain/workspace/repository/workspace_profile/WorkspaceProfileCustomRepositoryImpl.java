@@ -1,4 +1,4 @@
-package com.sku.loom.domain.workspace.repository;
+package com.sku.loom.domain.workspace.repository.workspace_profile;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;

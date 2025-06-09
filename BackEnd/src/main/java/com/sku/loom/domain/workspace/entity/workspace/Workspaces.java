@@ -1,4 +1,4 @@
-package com.sku.loom.domain.workspace.entity;
+package com.sku.loom.domain.workspace.entity.workspace;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;

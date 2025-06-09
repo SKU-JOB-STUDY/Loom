@@ -1,8 +1,9 @@
-package com.sku.loom.domain.workspace.entity;
+package com.sku.loom.domain.workspace.entity.workspace_profile;
 
 import com.sku.loom.domain.user.entity.Users;
-import com.sku.loom.domain.workspace.entity.role.WorkSpaceProfileRole;
-import com.sku.loom.domain.workspace.entity.role.WorkSpaceProfileRoleConverter;
+import com.sku.loom.domain.workspace.entity.workspace_profile.role.WorkSpaceProfileRole;
+import com.sku.loom.domain.workspace.entity.workspace_profile.role.WorkSpaceProfileRoleConverter;
+import com.sku.loom.domain.workspace.entity.workspace.Workspaces;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -56,7 +57,7 @@ public class WorkspaceProfiles {
     private Timestamp workspaceProfileCreatedAt;
 
     @Column(name = "workspace_profile_updated_at", nullable = false)
-    @Schema(description = "워크스페이스-프로필 생성일자", example = "2025-06-09 00:00:00")
+    @Schema(description = "워크스페이스-프로필 수정일자", example = "2025-06-09 00:00:00")
     private Timestamp workspaceProfileUpdatedAt;
 
     @Override
