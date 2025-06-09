@@ -22,7 +22,7 @@ public class Workspaces {
     private long workspaceId;
 
     @Column(name = "workspace_name", nullable = false)
-    @Schema(description = "워크스페이스 이름", example = "워크스페이스")
+    @Schema(description = "워크스페이스 이름", example = "워크스페이스 이름")
     private String workspaceName;
 
     @Column(name = "workspace_img", nullable = false)
