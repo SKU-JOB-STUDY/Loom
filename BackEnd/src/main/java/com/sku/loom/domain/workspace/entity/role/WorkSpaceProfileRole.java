@@ -1,4 +1,4 @@
-package com.sku.loom.domain.workspace.entity;
+package com.sku.loom.domain.workspace.entity.role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

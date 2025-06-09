@@ -1,6 +1,8 @@
 package com.sku.loom.domain.workspace.entity;
 
 import com.sku.loom.domain.user.entity.Users;
+import com.sku.loom.domain.workspace.entity.role.WorkSpaceProfileRole;
+import com.sku.loom.domain.workspace.entity.role.WorkSpaceProfileRoleConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
