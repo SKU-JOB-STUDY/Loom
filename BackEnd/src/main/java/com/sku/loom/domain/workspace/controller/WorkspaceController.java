@@ -52,4 +52,14 @@ public class WorkspaceController {
 
         return ResponseEntity.ok(BaseResponse.create(HttpStatus.OK.value(), "워크스페이스에 성공적으로 참여했습니다."));
     }
+
+    @PostMapping("/{workspaceId}/members")
+    @Operation(summary = "워크스페이스 멤버 추가", description = "워크스페이스를 통해 회원 추가")
+    public ResponseEntity<BaseResponse<Void>> postWorkspaceMembers(Authentication authentication,
+                                                                   @PathVariable("workspaceId") long workspaceId,
+                                                                   @RequestParam("userEmail") String userEmail) {
+        workspaceService.postWorkspaceMembers(Long.parseLong(authentication.getName()), workspaceId, userEmail);
+
+        return ResponseEntity.ok(BaseResponse.create(HttpStatus.OK.value(), "워크스페이스에 성공적으로 멤버를 추가했습니다."));
+    }
 }

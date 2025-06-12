@@ -4,5 +4,5 @@ import com.sku.loom.domain.workspace.entity.workspace_profile.WorkspaceProfiles;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
-public interface WorkspaceProfileJpaRepository extends JpaRepository<WorkspaceProfiles, Long>, WorkspaceProfileCustomRepository {
+public interface WorkspaceProfileJpaRepository extends JpaRepository<WorkspaceProfiles, Long> {
 }

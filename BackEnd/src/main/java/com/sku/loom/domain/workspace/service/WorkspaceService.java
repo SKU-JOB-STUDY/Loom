@@ -12,4 +12,6 @@ public interface WorkspaceService {
     void postWorkspace(long userId, String workspaceName, MultipartFile image) throws IOException;
 
     void postWorkspaceJoin(long userId, String workspaceCode);
+
+    void postWorkspaceMembers(long userId, long workspaceId, String userEmail);
 }

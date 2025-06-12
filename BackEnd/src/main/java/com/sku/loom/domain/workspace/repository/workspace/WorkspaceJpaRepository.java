@@ -9,4 +9,5 @@ public interface WorkspaceJpaRepository extends JpaRepository<Workspaces, Long> 
     boolean existsByWorkspaceCode(String workspaceCode);
 
     Optional<Workspaces> findByWorkspaceCode(String workspaceCode);
+    Optional<Workspaces> findByWorkspaceId(long workspaceId);
 }
