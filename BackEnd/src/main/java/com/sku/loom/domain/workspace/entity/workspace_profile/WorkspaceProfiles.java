@@ -1,6 +1,9 @@
-package com.sku.loom.domain.workspace.entity;
+package com.sku.loom.domain.workspace.entity.workspace_profile;
 
 import com.sku.loom.domain.user.entity.Users;
+import com.sku.loom.domain.workspace.entity.workspace_profile.role.WorkSpaceProfileRole;
+import com.sku.loom.domain.workspace.entity.workspace_profile.role.WorkSpaceProfileRoleConverter;
+import com.sku.loom.domain.workspace.entity.workspace.Workspaces;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +11,7 @@ import lombok.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "workspaces_profiles")
+@Table(name = "workspace_profiles")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -40,11 +43,12 @@ public class WorkspaceProfiles {
     @Schema(description = "워크스페이스-프로필 사진", example = "S3 url")
     private String workspaceProfileImg;
 
-    @Column(name = "workspace_profile_comment", nullable = true)
+    @Column(name = "workspace_profile_comment")
     @Schema(description = "워크스페이스-프로필 소개", example = "소개글 30자 이하")
     private String workspaceProfileComment;
 
-    @Column(name = "workspace_profile_role", nullable = true)
+    @Column(name = "workspace_profile_role", columnDefinition = "TINYINT(1)")
+    @Enumerated(EnumType.ORDINAL)
     @Convert(converter = WorkSpaceProfileRoleConverter.class)
     @Schema(description = "워크스페이스-프로필 역할", example = "0")
     private WorkSpaceProfileRole workSpaceProfileRole;
@@ -54,7 +58,7 @@ public class WorkspaceProfiles {
     private Timestamp workspaceProfileCreatedAt;
 
     @Column(name = "workspace_profile_updated_at", nullable = false)
-    @Schema(description = "워크스페이스-프로필 생성일자", example = "2025-06-09 00:00:00")
+    @Schema(description = "워크스페이스-프로필 수정일자", example = "2025-06-09 00:00:00")
     private Timestamp workspaceProfileUpdatedAt;
 
     @Override

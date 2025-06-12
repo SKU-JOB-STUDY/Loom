@@ -1,4 +1,4 @@
-package com.sku.loom.domain.workspace.entity;
+package com.sku.loom.domain.workspace.entity.workspace_profile.role;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
