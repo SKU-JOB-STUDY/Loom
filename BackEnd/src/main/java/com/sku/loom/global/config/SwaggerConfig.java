@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
-        // Define the security scheme
+        // JWT 보안 스키마 정의
         SecurityScheme securityScheme = new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
@@ -21,26 +21,22 @@ public class SwaggerConfig {
                 .in(SecurityScheme.In.HEADER)
                 .name("Authorization");
 
-        // Define the security requirement
+        // 보안 요구사항 정의
         SecurityRequirement securityRequirement = new SecurityRequirement()
                 .addList("bearerAuth");
 
         return new OpenAPI()
-//                .addServersItem(new Server().url("https://") // 배포한 서버
-//                        .description("Default Server URL"))
-                .addServersItem(new Server().url("http://localhost:8080")
-                        .description("Local Development Server"))
+                .addServersItem(new Server().url("/")
+                        .description("Default Server URL"))
                 .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
-                .addSecurityItem(securityRequirement)
+                .addSecurityItem(securityRequirement)  // 글로벌 보안 적용
                 .info(apiInfo());
     }
 
     private Info apiInfo() {
         return new Info()
-                .title("Loom") // API의 제목
-                .description("사이드 PJT 화이팅!~") // API에 대한 설명
-                .version("1.0.0"); // API의 버전
+                .title("Loom")
+                .description("사이드 PJT 화이팅!~")
+                .version("1.0.0");
     }
 }
-
-
