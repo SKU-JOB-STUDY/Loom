@@ -15,7 +15,14 @@ public enum ErrorDetail {
     INVALID_SIGNATURE("T0005", HttpStatus.UNAUTHORIZED, "유효하지 않은 JWT 서명입니다."),
     UNSUPPORTED_TOKEN("T0006", HttpStatus.UNAUTHORIZED, "지원되지 않는 JWT 토큰입니다."),
     INVALID_TOKEN("T0007", HttpStatus.UNAUTHORIZED, "유효하지 않은 JWT 토큰입니다."),
-    INVALID_REFRESH_TOKEN("T0008", HttpStatus.BAD_REQUEST, "리프레쉬 토큰이 만료 되었거나 유효하지 않습니다.");
+    INVALID_REFRESH_TOKEN("T0008", HttpStatus.BAD_REQUEST, "리프레쉬 토큰이 만료 되었거나 유효하지 않습니다."),
+
+    // User (회원 관련)
+    INVALID_VERIFICATION_CODE("U0001", HttpStatus.BAD_REQUEST, "인증코드가 올바르지 않습니다."),
+    USER_NOT_FOUND("U0002", HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
+
+    // Email (이메일 관련)
+    EMAIL_SEND_FAILED("E0001", HttpStatus.INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다.");
 
     private final String errorCode;
     private final HttpStatus httpStatus;
