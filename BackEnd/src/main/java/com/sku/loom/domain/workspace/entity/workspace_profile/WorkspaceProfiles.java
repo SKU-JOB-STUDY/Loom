@@ -11,7 +11,7 @@ import lombok.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "workspaces_profiles")
+@Table(name = "workspace_profiles")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -43,11 +43,12 @@ public class WorkspaceProfiles {
     @Schema(description = "워크스페이스-프로필 사진", example = "S3 url")
     private String workspaceProfileImg;
 
-    @Column(name = "workspace_profile_comment", nullable = true)
+    @Column(name = "workspace_profile_comment")
     @Schema(description = "워크스페이스-프로필 소개", example = "소개글 30자 이하")
     private String workspaceProfileComment;
 
-    @Column(name = "workspace_profile_role", nullable = true)
+    @Column(name = "workspace_profile_role", columnDefinition = "TINYINT(1)")
+    @Enumerated(EnumType.ORDINAL)
     @Convert(converter = WorkSpaceProfileRoleConverter.class)
     @Schema(description = "워크스페이스-프로필 역할", example = "0")
     private WorkSpaceProfileRole workSpaceProfileRole;

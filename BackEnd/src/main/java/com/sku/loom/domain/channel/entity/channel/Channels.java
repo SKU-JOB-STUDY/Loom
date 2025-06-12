@@ -1,9 +1,11 @@
 package com.sku.loom.domain.channel.entity.channel;
 
+
 import com.sku.loom.domain.channel.entity.section.Sections;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.sql.Timestamp;
 
@@ -31,11 +33,13 @@ public class Channels {
     @Schema(description = "채널 이름", example = "채널 이름 20자 이하")
     private String channelName;
 
-    @Column(name = "channel_opened", nullable = false)
+    @Column(name = "channel_opened", nullable = false, columnDefinition = "TINYINT(1)")
+    @ColumnDefault("true")
     @Schema(description = "채널 공개 여부", example = "1")
     private boolean channelOpened;
 
-    @Column(name = "channel_default", nullable = false)
+    @Column(name = "channel_default", nullable = false, columnDefinition = "TINYINT(1)")
+    @ColumnDefault("false")
     @Schema(description = "채널 기본 여부", example = "0")
     private boolean channelDefault;
 
