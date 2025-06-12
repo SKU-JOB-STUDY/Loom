@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ChannelCustomRepository {
     List<ChannelResponse> findChannelNameByUserId(long userId, long workspaceId);
-    Channels findChannelsByWorkspaceId(long workspaceId);
+    Channels findBasicChannelsByWorkspaceId(long workspaceId);
+    Channels findBasicChannelsByWorkspaceCode(String workspaceCode);
 }

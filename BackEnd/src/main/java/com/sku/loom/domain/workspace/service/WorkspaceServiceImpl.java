@@ -13,7 +13,6 @@ import com.sku.loom.domain.workspace.entity.workspace_profile.WorkspaceProfiles;
 import com.sku.loom.domain.workspace.entity.workspace.Workspaces;
 import com.sku.loom.domain.workspace.entity.workspace_profile.role.WorkSpaceProfileRole;
 import com.sku.loom.domain.workspace.repository.workspace_profile.WorkspaceProfileCustomRepository;
-import com.sku.loom.domain.workspace.repository.workspace_profile.WorkspaceProfileCustomRepositoryImpl;
 import com.sku.loom.domain.workspace.repository.workspace_profile.WorkspaceProfileJpaRepository;
 import com.sku.loom.domain.workspace.repository.workspace.WorkspaceJpaRepository;
 import com.sku.loom.global.exception.user.NotFoundUserException;
@@ -88,25 +87,17 @@ public class WorkspaceServiceImpl implements WorkspaceService{
     @Transactional
     public void postWorkspaceJoin(long userId, String workspaceCode) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
-        String workspaceProfileImg = "WORKSPACE PROFILES BASIC S3 URL";
         Users newUser = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new NotFoundUserException());
-        Workspaces workspace = workspaceJpaRepository.findByWorkspaceCode(workspaceCode)
+        Workspaces targetWorkspace = workspaceJpaRepository.findByWorkspaceCode(workspaceCode)
                 .orElseThrow(() -> new NotFoundWorkspaceException());
+        Channels basicChannel = channelCustomRepository.findBasicChannelsByWorkspaceCode(workspaceCode);
 
-        WorkspaceProfiles newWorkspaceProfile = WorkspaceProfiles.builder()
-                .user(newUser)
-                .workspace(workspace)
-                .workspaceProfileName(newUser.getUserEmail().split("@")[0])
-                .workspaceProfileImg(workspaceProfileImg)
-                .workSpaceProfileRole(WorkSpaceProfileRole.MEMBER)
-                .workspaceProfileCreatedAt(now)
-                .workspaceProfileUpdatedAt(now)
-                .build();
+        // CREATE WORKSPACE-PROFILES
+        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(newUser, targetWorkspace, now);
 
-        workspaceProfileJpaRepository.save(newWorkspaceProfile);
-        
-        // 프로필 채널 만들기 -> 기본 채널(querydsl) 찾아서 멤버 추가
+        // CREATE PROFILE_CHANNEL
+        createProfileChannel(newWorkspaceProfile, basicChannel);
     }
 
     @Override
@@ -120,7 +111,7 @@ public class WorkspaceServiceImpl implements WorkspaceService{
                 .orElseThrow(() -> new NotFoundUserException());
         Workspaces targetWorkspace = workspaceJpaRepository.findByWorkspaceId(workspaceId)
                 .orElseThrow(() -> new NotFoundWorkspaceException());
-        Channels basicChannel = channelCustomRepository.findChannelsByWorkspaceId(workspaceId);
+        Channels basicChannel = channelCustomRepository.findBasicChannelsByWorkspaceId(workspaceId);
 
         // CREATE WORKSPACE-PROFILES
         WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(addUser, targetWorkspace, now);

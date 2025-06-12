@@ -7,6 +7,7 @@ import com.sku.loom.domain.channel.entity.channel.Channels;
 import com.sku.loom.domain.channel.entity.channel.QChannels;
 import com.sku.loom.domain.channel.entity.profile_channel.QProfilesChannels;
 import com.sku.loom.domain.user.entity.QUsers;
+import com.sku.loom.domain.workspace.entity.workspace.QWorkspaces;
 import com.sku.loom.domain.workspace.entity.workspace_profile.QWorkspaceProfiles;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -41,7 +42,7 @@ public class ChannelCustomRepositoryImpl implements ChannelCustomRepository {
     }
 
     @Override
-    public Channels findChannelsByWorkspaceId(long workspaceId) {
+    public Channels findBasicChannelsByWorkspaceId(long workspaceId) {
         QChannels c = QChannels.channels;
         QProfilesChannels pc = QProfilesChannels.profilesChannels;
         QWorkspaceProfiles wp = QWorkspaceProfiles.workspaceProfiles;
@@ -56,5 +57,21 @@ public class ChannelCustomRepositoryImpl implements ChannelCustomRepository {
                 .fetchFirst();
     }
 
+    @Override
+    public Channels findBasicChannelsByWorkspaceCode(String workspaceCode) {
+        QChannels c = QChannels.channels;
+        QProfilesChannels pc = QProfilesChannels.profilesChannels;
+        QWorkspaceProfiles wp = QWorkspaceProfiles.workspaceProfiles;
+        QWorkspaces w = QWorkspaces.workspaces;
 
+        return queryFactory
+                .select(c)
+                .from(c)
+                .join(pc).on(c.channelId.eq(pc.channel.channelId))
+                .join(wp).on(pc.workspaceProfile.workspaceProfileId.eq(wp.workspaceProfileId))
+                .join(w).on(wp.workspace.workspaceId.eq(w.workspaceId))
+                .where(w.workspaceCode.eq(workspaceCode)
+                        .and(c.channelDefault.eq(true)))
+                .fetchFirst();
+    }
 }
