@@ -1,5 +1,6 @@
 package com.sku.loom.domain.channel.service;
 
+import com.sku.loom.domain.channel.dto.response.ChannelResponse;
 import com.sku.loom.domain.channel.repository.channel.ChannelCustomRepository;
 import com.sku.loom.domain.channel.repository.channel.ChannelJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class ChannelServiceImpl implements ChannelService{
     private final ChannelCustomRepository channelCustomRepository;
 
     @Override
-    public List<String> getChannels(long userId, long workspaceId) {
+    public List<ChannelResponse> getChannels(long userId, long workspaceId) {
         return channelCustomRepository.findChannelNameByUserId(userId, workspaceId);
     }
 }

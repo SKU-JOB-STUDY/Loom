@@ -1,5 +1,6 @@
 package com.sku.loom.domain.channel.controller;
 
+import com.sku.loom.domain.channel.dto.response.ChannelResponse;
 import com.sku.loom.domain.channel.service.ChannelService;
 import com.sku.loom.global.dto.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,9 +26,9 @@ public class ChannelController {
 
     @GetMapping("/api/workspaces/{workspaceId}/channels")
     @Operation(summary = "사용자 참여 채널 조회", description = "JWT를 사용해 회원의 참여한 전체 채널 조회")
-    public ResponseEntity<BaseResponse<List<String>>> getChannels(Authentication authentication,
-                                                                  @PathVariable("workspaceId") Long workspaceId) {
-        List<String> response = channelService.getChannels(Long.parseLong(authentication.getName()), workspaceId);
+    public ResponseEntity<BaseResponse<List<ChannelResponse>>> getChannels(Authentication authentication,
+                                                                           @PathVariable("workspaceId") Long workspaceId) {
+        List<ChannelResponse> response = channelService.getChannels(Long.parseLong(authentication.getName()), workspaceId);
 
         return ResponseEntity.ok(BaseResponse.create(HttpStatus.OK.value(), "참여한 채널 이름을 성공적으로 조회했습니다.", response));
     }

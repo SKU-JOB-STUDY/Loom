@@ -25,7 +25,7 @@ public class Channels {
     private long channelId;
 
     @ManyToOne
-    @JoinColumn(name = "section_id", nullable = true)
+    @JoinColumn(name = "section_id")
     @Schema(description = "섹션 아이디", example = "1")
     private Sections section;
 
