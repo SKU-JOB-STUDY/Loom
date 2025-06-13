@@ -8,11 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<Users, Long> {
-
+    Optional<Users> findByUserId(long userId);
     Optional<Users> findByUserEmail(String userEmail);
-
-    boolean existsByUserEmail(String userEmail);
-
-    @Query("SELECT u FROM Users u WHERE u.userRefreshToken = :refreshToken")
-    Optional<Users> findByUserRefreshToken(@Param("refreshToken") String refreshToken);
+    Optional<Users> findByUserRefreshToken( String refreshToken);
 }

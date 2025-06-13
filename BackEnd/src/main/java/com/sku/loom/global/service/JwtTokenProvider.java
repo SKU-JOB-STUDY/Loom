@@ -32,8 +32,8 @@ public class JwtTokenProvider {
     /**
      * Access Token 생성
      */
-    public String createAccessToken(Long userId, String email) {
-        Claims claims = Jwts.claims().setSubject(email);
+    public String createAccessToken(Long userId) {
+        Claims claims = Jwts.claims().setSubject(userId.toString());
         claims.put("userId", userId);
         claims.put("type", "access");
 
@@ -52,7 +52,7 @@ public class JwtTokenProvider {
      * Refresh Token 생성
      */
     public String createRefreshToken(Long userId) {
-        Claims claims = Jwts.claims();
+        Claims claims = Jwts.claims().setSubject(userId.toString());
         claims.put("userId", userId);
         claims.put("type", "refresh");
 
@@ -73,14 +73,6 @@ public class JwtTokenProvider {
     public Long getUserIdFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
         return claims.get("userId", Long.class);
-    }
-
-    /**
-     * 토큰에서 이메일 추출
-     */
-    public String getEmailFromToken(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.getSubject();
     }
 
     /**

@@ -2,6 +2,7 @@
 package com.sku.loom.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sku.loom.global.exception.token.EmptySubjectException;
 import com.sku.loom.global.service.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -139,19 +140,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private Authentication getAuthentication(String token) {
         try {
             Long userId = jwtTokenProvider.getUserIdFromToken(token);
-            String email = jwtTokenProvider.getEmailFromToken(token);
 
-            log.info("JWT 파싱 결과 - userId: {}, email: {}", userId, email);
+            log.info("JWT 파싱 결과 - userId: {}", userId);
 
-            if (userId == null || email == null) {
-                throw new RuntimeException("토큰에서 사용자 정보를 추출할 수 없습니다.");
+            if (userId == null) {
+                throw new EmptySubjectException();
             }
 
-            return new UsernamePasswordAuthenticationToken(
-                    email,           // principal
-                    null,            // credentials
-                    List.of()        // authorities
+            log.info("Authentication 생성 전 - principal로 사용할 값: {}, 타입: {}",
+                    userId, userId.getClass().getSimpleName());
+
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    userId.toString(),
+                    null,
+                    List.of()
             );
+
+            log.info("Authentication 생성 직후 - principal: {}, getName(): {}",
+                    auth.getPrincipal(), auth.getName());
+
+            return auth;
         } catch (Exception e) {
             log.error("JWT 토큰 파싱 실패: {}", e.getMessage());
             throw new RuntimeException("JWT 토큰 파싱 실패", e);
