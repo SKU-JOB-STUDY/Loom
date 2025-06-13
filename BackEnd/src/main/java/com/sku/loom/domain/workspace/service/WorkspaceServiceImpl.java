@@ -60,8 +60,8 @@ public class WorkspaceServiceImpl implements WorkspaceService{
         // CREATE WORKSPACES
         String workspaceImg = "WORKSPACE BASIC S3 URL";
 
-        if(image != null && !image.isEmpty())
-            workspaceImg = s3Service.uploadS3(image, "/workspaces/img");
+//        if(image != null && !image.isEmpty())
+//            workspaceImg = s3Service.uploadS3(image, "/workspaces/img");
 
         Workspaces newWorkspace = Workspaces.builder()
                 .workspaceName(workspaceName)
@@ -74,13 +74,13 @@ public class WorkspaceServiceImpl implements WorkspaceService{
         workspaceJpaRepository.save(newWorkspace);
 
         // CREATE WORKSPACE-PROFILES
-        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(user, newWorkspace, now);
+        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(user, newWorkspace, now, WorkSpaceProfileRole.OWNER);
 
         // CREATE CHANNEL
         Channels newBasicChannel = createChannel(newWorkspace, now);
 
         // CREATE PROFILE_CHANNEL
-        createProfileChannel(newWorkspaceProfile, newBasicChannel);
+        createProfileChannel(newWorkspaceProfile, newBasicChannel, ProfileChannelRole.OWNER);
     }
 
     @Override
@@ -94,10 +94,10 @@ public class WorkspaceServiceImpl implements WorkspaceService{
         Channels basicChannel = channelCustomRepository.findBasicChannelsByWorkspaceCode(workspaceCode);
 
         // CREATE WORKSPACE-PROFILES
-        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(newUser, targetWorkspace, now);
+        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(newUser, targetWorkspace, now, WorkSpaceProfileRole.MEMBER);
 
         // CREATE PROFILE_CHANNEL
-        createProfileChannel(newWorkspaceProfile, basicChannel);
+        createProfileChannel(newWorkspaceProfile, basicChannel, ProfileChannelRole.MEMBER);
     }
 
     @Override
@@ -114,10 +114,10 @@ public class WorkspaceServiceImpl implements WorkspaceService{
         Channels basicChannel = channelCustomRepository.findBasicChannelsByWorkspaceId(workspaceId);
 
         // CREATE WORKSPACE-PROFILES
-        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(addUser, targetWorkspace, now);
+        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(addUser, targetWorkspace, now, WorkSpaceProfileRole.MEMBER);
 
         // CREATE PROFILE_CHANNEL
-        createProfileChannel(newWorkspaceProfile, basicChannel);
+        createProfileChannel(newWorkspaceProfile, basicChannel, ProfileChannelRole.MEMBER);
     }
 
     /**
@@ -125,11 +125,11 @@ public class WorkspaceServiceImpl implements WorkspaceService{
      * @param workspaceProfile 타겟 워크스페이스-프로필
      * @param channel 타겟 채널
      */
-    public void createProfileChannel(WorkspaceProfiles workspaceProfile, Channels channel) {
+    public void createProfileChannel(WorkspaceProfiles workspaceProfile, Channels channel, ProfileChannelRole role) {
         ProfilesChannels newProfileChannel = ProfilesChannels.builder()
                 .workspaceProfile(workspaceProfile)
                 .channel(channel)
-                .profileChannelRole(ProfileChannelRole.OWNER)
+                .profileChannelRole(role)
                 .build();
 
         profileChannelJpaRepository.save(newProfileChannel);
@@ -162,7 +162,7 @@ public class WorkspaceServiceImpl implements WorkspaceService{
      * @param now 현재 시간
      * @return 생성된 workspace_profiles
      */
-    private WorkspaceProfiles createWorkspaceProfile(Users user, Workspaces workspace, Timestamp now) {
+    private WorkspaceProfiles createWorkspaceProfile(Users user, Workspaces workspace, Timestamp now, WorkSpaceProfileRole role) {
         String workspaceProfileImg = "WORKSPACE PROFILES BASIC S3 URL";
 
         WorkspaceProfiles newWorkspaceProfile = WorkspaceProfiles.builder()
@@ -170,7 +170,7 @@ public class WorkspaceServiceImpl implements WorkspaceService{
                 .workspace(workspace)
                 .workspaceProfileName(user.getUserEmail().split("@")[0])
                 .workspaceProfileImg(workspaceProfileImg)
-                .workSpaceProfileRole(WorkSpaceProfileRole.OWNER)
+                .workSpaceProfileRole(role)
                 .workspaceProfileCreatedAt(now)
                 .workspaceProfileUpdatedAt(now)
                 .build();
