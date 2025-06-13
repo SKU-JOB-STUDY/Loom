@@ -16,6 +16,7 @@ import com.sku.loom.domain.workspace.repository.workspace_profile.WorkspaceProfi
 import com.sku.loom.domain.workspace.repository.workspace_profile.WorkspaceProfileJpaRepository;
 import com.sku.loom.domain.workspace.repository.workspace.WorkspaceJpaRepository;
 import com.sku.loom.global.exception.user.NotFoundUserException;
+import com.sku.loom.global.exception.workspace.AlreadyExistsWorkspaceUserException;
 import com.sku.loom.global.exception.workspace.NotFoundWorkspaceException;
 import com.sku.loom.global.exception.workspace.WorkspaceOwnerRequiredException;
 import com.sku.loom.global.service.s3.S3Service;
@@ -60,8 +61,8 @@ public class WorkspaceServiceImpl implements WorkspaceService{
         // CREATE WORKSPACES
         String workspaceImg = "WORKSPACE BASIC S3 URL";
 
-//        if(image != null && !image.isEmpty())
-//            workspaceImg = s3Service.uploadS3(image, "/workspaces/img");
+        if(image != null && !image.isEmpty())
+            workspaceImg = s3Service.uploadS3(image, "/workspaces/img");
 
         Workspaces newWorkspace = Workspaces.builder()
                 .workspaceName(workspaceName)
@@ -93,6 +94,9 @@ public class WorkspaceServiceImpl implements WorkspaceService{
                 .orElseThrow(() -> new NotFoundWorkspaceException());
         Channels basicChannel = channelCustomRepository.findBasicChannelsByWorkspaceCode(workspaceCode);
 
+        if(chkExists(newUser, targetWorkspace))
+            throw new AlreadyExistsWorkspaceUserException();
+
         // CREATE WORKSPACE-PROFILES
         WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(newUser, targetWorkspace, now, WorkSpaceProfileRole.MEMBER);
 
@@ -113,6 +117,9 @@ public class WorkspaceServiceImpl implements WorkspaceService{
                 .orElseThrow(() -> new NotFoundWorkspaceException());
         Channels basicChannel = channelCustomRepository.findBasicChannelsByWorkspaceId(workspaceId);
 
+        if(chkExists(addUser, targetWorkspace))
+            throw new AlreadyExistsWorkspaceUserException();
+
         // CREATE WORKSPACE-PROFILES
         WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(addUser, targetWorkspace, now, WorkSpaceProfileRole.MEMBER);
 
@@ -120,11 +127,15 @@ public class WorkspaceServiceImpl implements WorkspaceService{
         createProfileChannel(newWorkspaceProfile, basicChannel, ProfileChannelRole.MEMBER);
     }
 
-    /**
-     * profiles_channels를 생성하는 메소드
-     * @param workspaceProfile 타겟 워크스페이스-프로필
-     * @param channel 타겟 채널
-     */
+    public boolean chkExists(Users user, Workspaces workspace) {
+        return workspaceProfileJpaRepository.existsByUserAndWorkspace(user, workspace);
+    }
+
+        /**
+         * profiles_channels를 생성하는 메소드
+         * @param workspaceProfile 타겟 워크스페이스-프로필
+         * @param channel 타겟 채널
+         */
     public void createProfileChannel(WorkspaceProfiles workspaceProfile, Channels channel, ProfileChannelRole role) {
         ProfilesChannels newProfileChannel = ProfilesChannels.builder()
                 .workspaceProfile(workspaceProfile)
