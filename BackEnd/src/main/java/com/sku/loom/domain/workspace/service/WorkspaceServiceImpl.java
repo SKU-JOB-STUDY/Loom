@@ -61,8 +61,8 @@ public class WorkspaceServiceImpl implements WorkspaceService{
         // CREATE WORKSPACES
         String workspaceImg = "WORKSPACE BASIC S3 URL";
 
-        if(image != null && !image.isEmpty())
-            workspaceImg = s3Service.uploadS3(image, "/workspaces/img");
+//        if(image != null && !image.isEmpty())
+//            workspaceImg = s3Service.uploadS3(image, "/workspaces/img");
 
         Workspaces newWorkspace = Workspaces.builder()
                 .workspaceName(workspaceName)
