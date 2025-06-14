@@ -1,4 +1,4 @@
-package com.sku.loom.domain.channel.service;
+package com.sku.loom.domain.channel.service.channel;
 
 import com.sku.loom.domain.channel.dto.request.ChannelCreateRequest;
 import com.sku.loom.domain.channel.dto.response.ChannelResponse;

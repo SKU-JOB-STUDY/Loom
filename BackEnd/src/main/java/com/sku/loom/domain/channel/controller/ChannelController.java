@@ -1,8 +1,10 @@
 package com.sku.loom.domain.channel.controller;
 
 import com.sku.loom.domain.channel.dto.request.ChannelCreateRequest;
+import com.sku.loom.domain.channel.dto.request.SectionCreateRequest;
 import com.sku.loom.domain.channel.dto.response.ChannelResponse;
-import com.sku.loom.domain.channel.service.ChannelService;
+import com.sku.loom.domain.channel.service.channel.ChannelService;
+import com.sku.loom.domain.channel.service.section.SectionService;
 import com.sku.loom.global.dto.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +25,7 @@ import java.util.List;
 public class ChannelController {
 
     private final ChannelService channelService;
+    private final SectionService sectionService;
 
     @GetMapping("/{workspaceId}/channels")
     @Operation(summary = "사용자 참여 채널 조회", description = "JWT를 사용해 회원의 참여한 전체 채널 조회")
@@ -35,11 +38,21 @@ public class ChannelController {
 
     @PostMapping("/{workspaceId}/channels")
     @Operation(summary = "채널 생성", description = "workspaceId에 해당하는 워크스페이스 내 채널 생성")
-    public ResponseEntity<BaseResponse<List<Void>>> postChannel(Authentication authentication,
+    public ResponseEntity<BaseResponse<Void>> postChannel(Authentication authentication,
                                                                 @PathVariable("workspaceId") long workspaceId,
                                                                 @RequestBody ChannelCreateRequest request) {
         channelService.postChannel(Long.parseLong(authentication.getName()), workspaceId, request);
 
         return ResponseEntity.ok((BaseResponse.create(HttpStatus.CREATED.value(), "채널을 성공적으로 생성했습니다.")));
+    }
+
+    @PostMapping("/{workspaceId}/sections")
+    @Operation(summary = "채널 섹션 생성", description = "workspaceId에 해당하는 워크스페이스 내 섹션 생성")
+    public ResponseEntity<BaseResponse<Void>> postSection(Authentication authentication,
+                                                          @PathVariable("workspaceId") long workspaceId,
+                                                          @RequestBody SectionCreateRequest request) {
+        sectionService.postSection(Long.parseLong(authentication.getName()), workspaceId, request);
+
+        return ResponseEntity.ok(BaseResponse.create(HttpStatus.CREATED.value(), "섹션을 성공적으로 생성했습니다."));
     }
 }
