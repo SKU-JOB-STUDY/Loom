@@ -54,7 +54,6 @@ public class WorkspaceServiceImpl implements WorkspaceService{
     @Override
     @Transactional
     public void postWorkspace(long userId, String workspaceName, MultipartFile image) throws IOException {
-        Timestamp now = new Timestamp(System.currentTimeMillis());
         Users user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new NotFoundUserException());
 
@@ -76,14 +75,7 @@ public class WorkspaceServiceImpl implements WorkspaceService{
         WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(user, newWorkspace, WorkSpaceProfileRole.OWNER);
 
         // CREATE CHANNEL
-        Channels newBasicChannel = Channels.builder()
-                .channelName(newWorkspace.getWorkspaceName() + "- 전체 채널")
-                .channelOpened(true)
-                .channelDefault(true)
-                .channelCreatedAt(now)
-                .channelUpdatedAt(now)
-                .build();
-        channelJpaRepository.save(newBasicChannel);
+        Channels newBasicChannel = createChannel(newWorkspace.getWorkspaceName() + "- 전체 채널", true, true);
 
         // CREATE PROFILE_CHANNEL
         createProfileChannel(newWorkspaceProfile, newBasicChannel, ProfileChannelRole.OWNER);
@@ -147,6 +139,25 @@ public class WorkspaceServiceImpl implements WorkspaceService{
                 .build();
 
         profileChannelJpaRepository.save(newProfileChannel);
+    }
+
+    /**
+     * channels을 생성하는 메소드
+     * @param channelName 채널명
+     * @param channelOpened 공개 여부
+     * @param channelDefault 기본 여부
+     * @return 생성된 channels
+     */
+    public Channels createChannel(String channelName, boolean channelOpened, boolean channelDefault) {
+        Channels newChannel = Channels.builder()
+                .channelName(channelName)
+                .channelOpened(channelOpened)
+                .channelDefault(channelDefault)
+                .build();
+
+        channelJpaRepository.save(newChannel);
+
+        return newChannel;
     }
 
     /**
