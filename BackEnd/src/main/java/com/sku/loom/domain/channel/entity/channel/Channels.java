@@ -43,7 +43,7 @@ public class Channels {
     @Schema(description = "채널 기본 여부", example = "0")
     private boolean channelDefault;
 
-    @Column(name = "channel_created_at", nullable = false)
+    @Column(name = "channel_created_at", nullable = false, updatable = false)
     @Schema(description = "채널 생성일자", example = "2025-06-09 00:00:00")
     private Timestamp channelCreatedAt;
 
@@ -56,6 +56,7 @@ public class Channels {
         return "Channels{" +
                 "channelId=" + channelId +
                 ", section=" + section +
+                ", channelName='" + channelName + '\'' +
                 ", channelOpened=" + channelOpened +
                 ", channelDefault=" + channelDefault +
                 ", channelCreatedAt=" + channelCreatedAt +

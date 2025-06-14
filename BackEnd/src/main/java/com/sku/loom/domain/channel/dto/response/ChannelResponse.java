@@ -1,6 +1,5 @@
 package com.sku.loom.domain.channel.dto.response;
 
-import com.sku.loom.domain.channel.entity.section.Sections;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +17,8 @@ public class ChannelResponse {
     private String sectionIcon;
     @Schema(description = "채널 이름", example = "채널 이름 20자 이하")
     private String channelName;
+    @Schema(description = "채널 공개 여부", example = "1")
+    private boolean channelOpened;
     @Schema(description = "채널 기본 여부", example = "0")
     private boolean channelDefault;
 }

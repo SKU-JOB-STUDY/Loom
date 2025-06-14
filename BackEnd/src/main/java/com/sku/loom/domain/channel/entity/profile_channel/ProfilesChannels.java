@@ -38,4 +38,14 @@ public class ProfilesChannels {
     @Convert(converter = WorkSpaceProfileRoleConverter.class)
     @Schema(description = "프로필-채널 역할", example = "0")
     private ProfileChannelRole profileChannelRole;
+
+    @Override
+    public String toString() {
+        return "ProfilesChannels{" +
+                "profileChannelId=" + profileChannelId +
+                ", workspaceProfile=" + workspaceProfile +
+                ", channel=" + channel +
+                ", profileChannelRole=" + profileChannelRole +
+                '}';
+    }
 }

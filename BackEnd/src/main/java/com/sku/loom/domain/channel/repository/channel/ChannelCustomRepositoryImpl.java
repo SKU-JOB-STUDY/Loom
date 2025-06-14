@@ -34,6 +34,7 @@ public class ChannelCustomRepositoryImpl implements ChannelCustomRepository {
                         s.sectionName,
                         s.sectionIcon,
                         c.channelName,
+                        c.channelOpened,
                         c.channelDefault
                 ))
                 .from(u)
