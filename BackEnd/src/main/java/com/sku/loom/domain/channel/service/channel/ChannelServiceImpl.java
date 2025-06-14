@@ -42,6 +42,8 @@ public class ChannelServiceImpl implements ChannelService{
                 .channelName(request.getChannelName())
                 .channelOpened(request.isChannelOpened())
                 .channelDefault(false)
+                .channelCreatedAt(now)
+                .channelUpdatedAt(now)
                 .build();
         channelJpaRepository.save(newChannel);
 

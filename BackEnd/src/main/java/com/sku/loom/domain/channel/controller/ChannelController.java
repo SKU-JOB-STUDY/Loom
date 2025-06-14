@@ -3,6 +3,7 @@ package com.sku.loom.domain.channel.controller;
 import com.sku.loom.domain.channel.dto.request.ChannelCreateRequest;
 import com.sku.loom.domain.channel.dto.request.SectionCreateRequest;
 import com.sku.loom.domain.channel.dto.response.ChannelResponse;
+import com.sku.loom.domain.channel.dto.response.SectionResponse;
 import com.sku.loom.domain.channel.service.channel.ChannelService;
 import com.sku.loom.domain.channel.service.section.SectionService;
 import com.sku.loom.global.dto.response.BaseResponse;
@@ -34,6 +35,15 @@ public class ChannelController {
         List<ChannelResponse> response = channelService.getChannels(Long.parseLong(authentication.getName()), workspaceId);
 
         return ResponseEntity.ok(BaseResponse.create(HttpStatus.OK.value(), "참여한 채널 이름을 성공적으로 조회했습니다.", response));
+    }
+
+    @GetMapping("{workspaceId}/sections")
+    @Operation(summary = "사용자 채널 섹션 조회", description = "JWT를 사용해 회원이 참여한 workspaceId에 해당하는 워크스페이스 내 섹션 조회")
+    public ResponseEntity<BaseResponse<List<SectionResponse>>> getSections(Authentication authentication,
+                                                                           @PathVariable("workspaceId") Long workspaceId) {
+        List<SectionResponse> response = sectionService.getSections(Long.parseLong(authentication.getName()), workspaceId);
+
+        return ResponseEntity.ok(BaseResponse.create(HttpStatus.OK.value(), "참여한 워크스페이스 내 모든 섹션을 성공적으로 조회했습니다.", response));
     }
 
     @PostMapping("/{workspaceId}/channels")

@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Random;
@@ -54,6 +55,8 @@ public class WorkspaceServiceImpl implements WorkspaceService{
     @Override
     @Transactional
     public void postWorkspace(long userId, String workspaceName, MultipartFile image) throws IOException {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+
         Users user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new NotFoundUserException());
 
@@ -67,6 +70,8 @@ public class WorkspaceServiceImpl implements WorkspaceService{
                 .workspaceName(workspaceName)
                 .workspaceImg(workspaceImg)
                 .workspaceCode(generateWorkspaceCode())
+                .workspaceCreatedAt(now)
+                .workspaceUpdatedAt(now)
                 .build();
 
         workspaceJpaRepository.save(newWorkspace);
@@ -149,10 +154,13 @@ public class WorkspaceServiceImpl implements WorkspaceService{
      * @return 생성된 channels
      */
     public Channels createChannel(String channelName, boolean channelOpened, boolean channelDefault) {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
         Channels newChannel = Channels.builder()
                 .channelName(channelName)
                 .channelOpened(channelOpened)
                 .channelDefault(channelDefault)
+                .channelCreatedAt(now)
+                .channelUpdatedAt(now)
                 .build();
 
         channelJpaRepository.save(newChannel);
@@ -167,6 +175,7 @@ public class WorkspaceServiceImpl implements WorkspaceService{
      * @return 생성된 workspace_profiles
      */
     private WorkspaceProfiles createWorkspaceProfile(Users user, Workspaces workspace, WorkSpaceProfileRole role) {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
         String workspaceProfileImg = "WORKSPACE PROFILES BASIC S3 URL";
 
         WorkspaceProfiles newWorkspaceProfile = WorkspaceProfiles.builder()
@@ -175,6 +184,8 @@ public class WorkspaceServiceImpl implements WorkspaceService{
                 .workspaceProfileName(user.getUserEmail().split("@")[0])
                 .workspaceProfileImg(workspaceProfileImg)
                 .workSpaceProfileRole(role)
+                .workspaceProfileCreatedAt(now)
+                .workspaceProfileUpdatedAt(now)
                 .build();
 
         workspaceProfileJpaRepository.save(newWorkspaceProfile);
