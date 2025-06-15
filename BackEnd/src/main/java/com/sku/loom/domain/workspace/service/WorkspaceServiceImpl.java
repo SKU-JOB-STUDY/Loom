@@ -16,6 +16,7 @@ import com.sku.loom.domain.workspace.repository.workspace_profile.WorkspaceProfi
 import com.sku.loom.domain.workspace.repository.workspace_profile.WorkspaceProfileJpaRepository;
 import com.sku.loom.domain.workspace.repository.workspace.WorkspaceJpaRepository;
 import com.sku.loom.global.exception.user.NotFoundUserException;
+import com.sku.loom.global.exception.workspace.AlreadyExistsWorkspaceUserException;
 import com.sku.loom.global.exception.workspace.NotFoundWorkspaceException;
 import com.sku.loom.global.exception.workspace.WorkspaceOwnerRequiredException;
 import com.sku.loom.global.service.s3.S3Service;
@@ -53,51 +54,50 @@ public class WorkspaceServiceImpl implements WorkspaceService{
     @Override
     @Transactional
     public void postWorkspace(long userId, String workspaceName, MultipartFile image) throws IOException {
-        Timestamp now = new Timestamp(System.currentTimeMillis());
         Users user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new NotFoundUserException());
 
         // CREATE WORKSPACES
         String workspaceImg = "WORKSPACE BASIC S3 URL";
 
-        if(image != null && !image.isEmpty())
-            workspaceImg = s3Service.uploadS3(image, "/workspaces/img");
+//        if(image != null && !image.isEmpty())
+//            workspaceImg = s3Service.uploadS3(image, "/workspaces/img");
 
         Workspaces newWorkspace = Workspaces.builder()
                 .workspaceName(workspaceName)
                 .workspaceImg(workspaceImg)
                 .workspaceCode(generateWorkspaceCode())
-                .workspaceCreatedAt(now)
-                .workspaceUpdatedAt(now)
                 .build();
 
         workspaceJpaRepository.save(newWorkspace);
 
         // CREATE WORKSPACE-PROFILES
-        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(user, newWorkspace, now);
+        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(user, newWorkspace, WorkSpaceProfileRole.OWNER);
 
         // CREATE CHANNEL
-        Channels newBasicChannel = createChannel(newWorkspace, now);
+        Channels newBasicChannel = createChannel(newWorkspace.getWorkspaceName() + "- 전체 채널", true, true);
 
         // CREATE PROFILE_CHANNEL
-        createProfileChannel(newWorkspaceProfile, newBasicChannel);
+        createProfileChannel(newWorkspaceProfile, newBasicChannel, ProfileChannelRole.OWNER);
     }
 
     @Override
     @Transactional
     public void postWorkspaceJoin(long userId, String workspaceCode) {
-        Timestamp now = new Timestamp(System.currentTimeMillis());
         Users newUser = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new NotFoundUserException());
         Workspaces targetWorkspace = workspaceJpaRepository.findByWorkspaceCode(workspaceCode)
                 .orElseThrow(() -> new NotFoundWorkspaceException());
         Channels basicChannel = channelCustomRepository.findBasicChannelsByWorkspaceCode(workspaceCode);
 
+        if(chkExists(newUser, targetWorkspace))
+            throw new AlreadyExistsWorkspaceUserException();
+
         // CREATE WORKSPACE-PROFILES
-        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(newUser, targetWorkspace, now);
+        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(newUser, targetWorkspace, WorkSpaceProfileRole.MEMBER);
 
         // CREATE PROFILE_CHANNEL
-        createProfileChannel(newWorkspaceProfile, basicChannel);
+        createProfileChannel(newWorkspaceProfile, basicChannel, ProfileChannelRole.MEMBER);
     }
 
     @Override
@@ -106,48 +106,53 @@ public class WorkspaceServiceImpl implements WorkspaceService{
         if(chkWorkspaceOwner(userId, workspaceId))
             throw new WorkspaceOwnerRequiredException();
 
-        Timestamp now = new Timestamp(System.currentTimeMillis());
         Users addUser = userRepository.findByUserEmail(userEmail)
                 .orElseThrow(() -> new NotFoundUserException());
         Workspaces targetWorkspace = workspaceJpaRepository.findByWorkspaceId(workspaceId)
                 .orElseThrow(() -> new NotFoundWorkspaceException());
         Channels basicChannel = channelCustomRepository.findBasicChannelsByWorkspaceId(workspaceId);
 
+        if(chkExists(addUser, targetWorkspace))
+            throw new AlreadyExistsWorkspaceUserException();
+
         // CREATE WORKSPACE-PROFILES
-        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(addUser, targetWorkspace, now);
+        WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(addUser, targetWorkspace, WorkSpaceProfileRole.MEMBER);
 
         // CREATE PROFILE_CHANNEL
-        createProfileChannel(newWorkspaceProfile, basicChannel);
+        createProfileChannel(newWorkspaceProfile, basicChannel, ProfileChannelRole.MEMBER);
     }
 
-    /**
-     * profiles_channels를 생성하는 메소드
-     * @param workspaceProfile 타겟 워크스페이스-프로필
-     * @param channel 타겟 채널
-     */
-    public void createProfileChannel(WorkspaceProfiles workspaceProfile, Channels channel) {
+    public boolean chkExists(Users user, Workspaces workspace) {
+        return workspaceProfileJpaRepository.existsByUserAndWorkspace(user, workspace);
+    }
+
+        /**
+         * profiles_channels를 생성하는 메소드
+         * @param workspaceProfile 타겟 워크스페이스-프로필
+         * @param channel 타겟 채널
+         */
+    public void createProfileChannel(WorkspaceProfiles workspaceProfile, Channels channel, ProfileChannelRole role) {
         ProfilesChannels newProfileChannel = ProfilesChannels.builder()
                 .workspaceProfile(workspaceProfile)
                 .channel(channel)
-                .profileChannelRole(ProfileChannelRole.OWNER)
+                .profileChannelRole(role)
                 .build();
 
         profileChannelJpaRepository.save(newProfileChannel);
     }
 
     /**
-     * channels를 생성하는 메소드
-     * @param workspaces 타겟 워크스페이스
-     * @param now 현재 시간
+     * channels을 생성하는 메소드
+     * @param channelName 채널명
+     * @param channelOpened 공개 여부
+     * @param channelDefault 기본 여부
      * @return 생성된 channels
      */
-    public Channels createChannel(Workspaces workspaces, Timestamp now) {
+    public Channels createChannel(String channelName, boolean channelOpened, boolean channelDefault) {
         Channels newChannel = Channels.builder()
-                .channelName(workspaces.getWorkspaceName() + "- 전체 채널")
-                .channelOpened(true)
-                .channelDefault(true)
-                .channelCreatedAt(now)
-                .channelUpdatedAt(now)
+                .channelName(channelName)
+                .channelOpened(channelOpened)
+                .channelDefault(channelDefault)
                 .build();
 
         channelJpaRepository.save(newChannel);
@@ -159,10 +164,9 @@ public class WorkspaceServiceImpl implements WorkspaceService{
      * workspace_profiles을 생성하는 메소드
      * @param user 타겟 유저
      * @param workspace 타겟 워크스페이스
-     * @param now 현재 시간
      * @return 생성된 workspace_profiles
      */
-    private WorkspaceProfiles createWorkspaceProfile(Users user, Workspaces workspace, Timestamp now) {
+    private WorkspaceProfiles createWorkspaceProfile(Users user, Workspaces workspace, WorkSpaceProfileRole role) {
         String workspaceProfileImg = "WORKSPACE PROFILES BASIC S3 URL";
 
         WorkspaceProfiles newWorkspaceProfile = WorkspaceProfiles.builder()
@@ -170,9 +174,7 @@ public class WorkspaceServiceImpl implements WorkspaceService{
                 .workspace(workspace)
                 .workspaceProfileName(user.getUserEmail().split("@")[0])
                 .workspaceProfileImg(workspaceProfileImg)
-                .workSpaceProfileRole(WorkSpaceProfileRole.OWNER)
-                .workspaceProfileCreatedAt(now)
-                .workspaceProfileUpdatedAt(now)
+                .workSpaceProfileRole(role)
                 .build();
 
         workspaceProfileJpaRepository.save(newWorkspaceProfile);

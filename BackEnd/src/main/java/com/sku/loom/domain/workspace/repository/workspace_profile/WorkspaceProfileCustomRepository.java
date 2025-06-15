@@ -1,12 +1,15 @@
 package com.sku.loom.domain.workspace.repository.workspace_profile;
 
+import com.sku.loom.domain.user.entity.Users;
 import com.sku.loom.domain.workspace.dto.response.WorkspaceResponse;
+import com.sku.loom.domain.workspace.entity.workspace.Workspaces;
+import com.sku.loom.domain.workspace.entity.workspace_profile.WorkspaceProfiles;
 import com.sku.loom.domain.workspace.entity.workspace_profile.role.WorkSpaceProfileRole;
 
 import java.util.List;
 
 public interface WorkspaceProfileCustomRepository {
     List<WorkspaceResponse> findWorkspaceResponsesByUserId(Long userId);
-
     WorkSpaceProfileRole findWorkspaceProfileRoleByUserIdAndWorkspaceId(long userId, long workspaceId);
+    WorkspaceProfiles findByUserIdAndWorkspaceId(long userId, long workspaceId);
 }

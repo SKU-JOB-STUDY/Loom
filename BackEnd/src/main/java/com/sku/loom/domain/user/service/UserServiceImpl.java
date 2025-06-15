@@ -5,7 +5,7 @@ import com.sku.loom.domain.user.dto.AuthResponse;
 import com.sku.loom.domain.user.dto.EmailSendRequest;
 import com.sku.loom.domain.user.entity.Users;
 import com.sku.loom.domain.user.repository.UserRepository;
-import com.sku.loom.global.exception.UserException;
+import com.sku.loom.global.exception.user.UserException;
 import com.sku.loom.global.exception.constant.ErrorDetail;
 import com.sku.loom.global.service.EmailService;
 import com.sku.loom.global.service.JwtTokenProvider;
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 3. JWT 토큰 발급
-        String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserEmail());
+        String accessToken = jwtTokenProvider.createAccessToken(user.getUserId());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getUserId());
 
         // 4. Refresh Token DB 저장
@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserException(ErrorDetail.INVALID_REFRESH_TOKEN));
 
         // 3. 새로운 토큰들 발급
-        String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserEmail());
+        String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId());
         String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getUserId()); // 새로 생성
 
         // 4. 새로운 리프레시 토큰을 DB에 저장

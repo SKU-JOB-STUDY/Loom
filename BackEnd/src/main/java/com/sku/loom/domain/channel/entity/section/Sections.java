@@ -1,6 +1,6 @@
 package com.sku.loom.domain.channel.entity.section;
 
-import com.sku.loom.domain.workspace.entity.workspace.Workspaces;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;

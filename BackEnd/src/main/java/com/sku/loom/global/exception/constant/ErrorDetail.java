@@ -25,6 +25,7 @@ public enum ErrorDetail {
     // Workspace
     NOT_FOUND_WORKSPACE("W0001", HttpStatus.NOT_FOUND, "워크스페이스를 찾을 수 없습니다."),
     WORKSPACE_OWNER_REQUIRED("W0002", HttpStatus.FORBIDDEN, "워크스페이스 소유자만 수행할 수 있는 작업입니다."),
+    ALREADY_EXISTS_WORKSPACE_USER("W0003", HttpStatus.CONFLICT, "이미 워크스페이스에 참여중인 사용자입니다."),
 
     // S3
     NOT_FOUND_S3_FILE("S0001", HttpStatus.NOT_FOUND, "S3에 파일이 존재하지 않습니다."),

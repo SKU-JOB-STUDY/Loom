@@ -6,6 +6,7 @@ import com.sku.loom.domain.channel.dto.response.ChannelResponse;
 import com.sku.loom.domain.channel.entity.channel.Channels;
 import com.sku.loom.domain.channel.entity.channel.QChannels;
 import com.sku.loom.domain.channel.entity.profile_channel.QProfilesChannels;
+import com.sku.loom.domain.channel.entity.section.QSections;
 import com.sku.loom.domain.user.entity.QUsers;
 import com.sku.loom.domain.workspace.entity.workspace.QWorkspaces;
 import com.sku.loom.domain.workspace.entity.workspace_profile.QWorkspaceProfiles;
@@ -26,20 +27,29 @@ public class ChannelCustomRepositoryImpl implements ChannelCustomRepository {
         QUsers u = QUsers.users;
         QProfilesChannels pc = QProfilesChannels.profilesChannels;
         QChannels c = QChannels.channels;
+        QSections s = QSections.sections;
 
         return queryFactory
-                .select(Projections.constructor(ChannelResponse.class, c.section, c.channelName, c.channelDefault))
+                .select(Projections.constructor(ChannelResponse.class,
+                        s.sectionName,
+                        s.sectionIcon,
+                        c.channelName,
+                        c.channelOpened,
+                        c.channelDefault
+                ))
                 .from(u)
                 .innerJoin(wp).on(u.userId.eq(wp.user.userId))
                 .innerJoin(pc).on(wp.workspaceProfileId.eq(pc.workspaceProfile.workspaceProfileId))
                 .innerJoin(c).on(pc.channel.channelId.eq(c.channelId))
+                .leftJoin(s).on(c.section.sectionId.eq(s.sectionId))
                 .where(
                         u.userId.eq(userId)
                                 .and(wp.workspace.workspaceId.eq(workspaceId))
-                                .and(c.channelOpened.eq(true))
                 )
+                .orderBy(s.sectionName.asc(), c.channelName.asc())
                 .fetch();
     }
+
 
     @Override
     public Channels findBasicChannelsByWorkspaceId(long workspaceId) {

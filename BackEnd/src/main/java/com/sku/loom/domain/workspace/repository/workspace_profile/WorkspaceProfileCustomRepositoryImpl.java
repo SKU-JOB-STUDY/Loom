@@ -6,6 +6,7 @@ import com.sku.loom.domain.user.entity.QUsers;
 import com.sku.loom.domain.workspace.dto.response.WorkspaceResponse;
 import com.sku.loom.domain.workspace.entity.workspace.QWorkspaces;
 import com.sku.loom.domain.workspace.entity.workspace_profile.QWorkspaceProfiles;
+import com.sku.loom.domain.workspace.entity.workspace_profile.WorkspaceProfiles;
 import com.sku.loom.domain.workspace.entity.workspace_profile.role.WorkSpaceProfileRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -43,5 +44,19 @@ public class WorkspaceProfileCustomRepositoryImpl implements WorkspaceProfileCus
                 .join(wp.user, u).on(u.userId.eq(userId))
                 .join(wp.workspace, w).on(w.workspaceId.eq(workspaceId))
                 .fetchFirst();
+    }
+
+    @Override
+    public WorkspaceProfiles findByUserIdAndWorkspaceId(long userId, long workspaceId) {
+        QWorkspaceProfiles wp = QWorkspaceProfiles.workspaceProfiles;
+        QUsers u = QUsers.users;
+        QWorkspaces w = QWorkspaces.workspaces;
+
+        return queryFactory
+                .select(wp)
+                .from(wp)
+                .join(wp.user, u).on(u.userId.eq(userId))
+                .join(wp.workspace, w).on(w.workspaceId.eq(workspaceId))
+                .fetchOne();
     }
 }
