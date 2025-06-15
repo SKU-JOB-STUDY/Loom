@@ -2,7 +2,8 @@ package com.sku.loom.global.service.s3;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.sku.loom.global.exception.s3.NotFoundS3FileException;
+import com.sku.loom.global.exception.base.CustomException;
+import com.sku.loom.global.exception.constant.ErrorDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,7 +74,7 @@ public class S3Uploader {
                 log.info("File deleted successfully: {}", key);
             } else { // file not found
                 log.warn("File not found: {}", key);
-                throw new NotFoundS3FileException();
+                throw new CustomException(ErrorDetail.NOT_FOUND_S3_FILE);
             }
         } catch (Exception exception) {
             log.info(exception.getMessage());
