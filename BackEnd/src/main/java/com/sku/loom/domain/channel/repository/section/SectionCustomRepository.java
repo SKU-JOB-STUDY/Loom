@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface SectionCustomRepository {
     List<SectionResponse> findSectionResponsesByUserIdAndWorkspaceId(long userId, long workspaceId);
+    boolean existsBySectionIdAndUserIdAndWorkspaceId(long sectionId, long workspaceId, long userId);
 }

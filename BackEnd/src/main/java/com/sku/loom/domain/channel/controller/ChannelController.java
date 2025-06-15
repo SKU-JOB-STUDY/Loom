@@ -1,6 +1,7 @@
 package com.sku.loom.domain.channel.controller;
 
 import com.sku.loom.domain.channel.dto.request.ChannelCreateRequest;
+import com.sku.loom.domain.channel.dto.request.ChannelSectionsUpdateRequest;
 import com.sku.loom.domain.channel.dto.request.SectionCreateRequest;
 import com.sku.loom.domain.channel.dto.response.ChannelResponse;
 import com.sku.loom.domain.channel.dto.response.SectionResponse;
@@ -14,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -66,5 +68,13 @@ public class ChannelController {
         return ResponseEntity.ok(BaseResponse.create(HttpStatus.CREATED.value(), "섹션을 성공적으로 생성했습니다."));
     }
 
+    @PatchMapping("/{workspaceId}/sections")
+    @Operation(summary = "채널 섹션 변경", description = "workspaceId에 해당하는 워크스페이스 내 channelId에 해당하는 채널을 sectionId에 해당하는 섹션으로 변경")
+    public ResponseEntity<BaseResponse<Void>> patchChannelSection(Authentication authentication,
+                                                                  @PathVariable("workspaceId") long workspaceId,
+                                                                  @RequestBody ChannelSectionsUpdateRequest request) {
+        sectionService.patchChannelSection(Long.parseLong(authentication.getName()), workspaceId, request);
 
+        return ResponseEntity.ok(BaseResponse.create(HttpStatus.OK.value(), "채널의 섹션을 성공적으로 변경했습니다."));
+    }
 }

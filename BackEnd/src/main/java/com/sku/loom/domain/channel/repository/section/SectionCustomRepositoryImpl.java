@@ -32,4 +32,21 @@ public class SectionCustomRepositoryImpl implements SectionCustomRepository{
                         .and(wp.workspace.workspaceId.eq(workspaceId)))
                 .fetch();
     }
+
+    @Override
+    public boolean existsBySectionIdAndUserIdAndWorkspaceId(long sectionId, long workspaceId, long userId) {
+        QSections s = QSections.sections;
+        QWorkspaceProfiles wp = QWorkspaceProfiles.workspaceProfiles;
+
+        return queryFactory
+                .selectOne()
+                .from(s)
+                .join(wp).on(s.workspaceProfile.workspaceProfileId.eq(wp.workspaceProfileId))
+                .where(
+                        s.sectionId.eq(sectionId)
+                                .and(wp.workspace.workspaceId.eq(workspaceId))
+                                .and(wp.user.userId.eq(userId))
+                )
+                .fetchFirst() != null;
+    }
 }

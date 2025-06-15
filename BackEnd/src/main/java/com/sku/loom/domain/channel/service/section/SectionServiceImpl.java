@@ -1,12 +1,17 @@
 package com.sku.loom.domain.channel.service.section;
 
+import com.sku.loom.domain.channel.dto.request.ChannelSectionsUpdateRequest;
 import com.sku.loom.domain.channel.dto.request.SectionCreateRequest;
 import com.sku.loom.domain.channel.dto.response.SectionResponse;
+import com.sku.loom.domain.channel.entity.channel.Channels;
 import com.sku.loom.domain.channel.entity.section.Sections;
+import com.sku.loom.domain.channel.repository.channel.ChannelJpaRepository;
 import com.sku.loom.domain.channel.repository.section.SectionCustomRepository;
 import com.sku.loom.domain.channel.repository.section.SectionJpaRepository;
 import com.sku.loom.domain.workspace.entity.workspace_profile.WorkspaceProfiles;
 import com.sku.loom.domain.workspace.repository.workspace_profile.WorkspaceProfileCustomRepository;
+import com.sku.loom.global.exception.base.CustomException;
+import com.sku.loom.global.exception.constant.ErrorDetail;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -22,6 +27,7 @@ public class SectionServiceImpl implements SectionService{
 
     private final SectionJpaRepository sectionJpaRepository;
     private final SectionCustomRepository sectionCustomRepository;
+    private final ChannelJpaRepository channelJpaRepository;
     private final WorkspaceProfileCustomRepository workspaceProfileCustomRepository;
 
     @Override
@@ -42,5 +48,24 @@ public class SectionServiceImpl implements SectionService{
                 .sectionCreatedAt(now)
                 .build();
         sectionJpaRepository.save(newSection);
+    }
+
+    @Override
+    @Transactional
+    public void patchChannelSection(long userId, long workspaceId, ChannelSectionsUpdateRequest request) {
+        if(!sectionCustomRepository.existsBySectionIdAndUserIdAndWorkspaceId(request.getSectionId(), workspaceId, userId))
+            throw new CustomException(ErrorDetail.FORBIDDEN_SECTION);
+
+        Channels targetChannel = channelJpaRepository.findByChannelId(request.getChannelId())
+                .orElseThrow(() -> new CustomException(ErrorDetail.NOT_FOUND_CHANNEL));
+
+        Sections targetSection = null;
+        if (request.getSectionId() != null) {
+            targetSection = sectionJpaRepository.findBySectionId(request.getSectionId())
+                    .orElseThrow(() -> new CustomException(ErrorDetail.NOT_FOUND_SECTION));
+        }
+
+        targetChannel.setSection(targetSection);
+        channelJpaRepository.save(targetChannel);
     }
 }

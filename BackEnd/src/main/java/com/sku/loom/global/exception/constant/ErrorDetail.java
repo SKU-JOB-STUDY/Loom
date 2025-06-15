@@ -27,6 +27,13 @@ public enum ErrorDetail {
     WORKSPACE_OWNER_REQUIRED("W0002", HttpStatus.FORBIDDEN, "워크스페이스 소유자만 수행할 수 있는 작업입니다."),
     ALREADY_EXISTS_WORKSPACE_USER("W0003", HttpStatus.CONFLICT, "이미 워크스페이스에 참여중인 사용자입니다."),
 
+    // Channel
+    NOT_FOUND_CHANNEL("C0001", HttpStatus.NOT_FOUND, "채널을 찾을 수 없습니다."),
+
+    // Section
+    NOT_FOUND_SECTION("S0001", HttpStatus.NOT_FOUND, "섹션을 찾을 수 없습니다."),
+    FORBIDDEN_SECTION("S0002", HttpStatus.FORBIDDEN, "해당 섹션에 대한 접근 권한이 없습니다"),
+
     // S3
     NOT_FOUND_S3_FILE("S0001", HttpStatus.NOT_FOUND, "S3에 파일이 존재하지 않습니다."),
 
