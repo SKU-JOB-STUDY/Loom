@@ -6,7 +6,7 @@ import com.sku.loom.domain.user.dto.EmailSendRequest;
 import com.sku.loom.domain.user.dto.EmailSendResponse;
 import com.sku.loom.domain.user.entity.Users;
 import com.sku.loom.domain.user.repository.UserRepository;
-import com.sku.loom.global.exception.user.UserException;
+import com.sku.loom.global.exception.base.CustomException;
 import com.sku.loom.global.exception.constant.ErrorDetail;
 import com.sku.loom.global.service.EmailService;
 import com.sku.loom.global.service.JwtTokenProvider;
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
         // 1. 이메일 인증코드 검증
         if (!emailService.verifyCode(request.getEmail(), request.getCode())) {
-            throw new UserException(ErrorDetail.INVALID_VERIFICATION_CODE);
+            throw new CustomException(ErrorDetail.INVALID_VERIFICATION_CODE);
         }
 
         // 2. DB에서 사용자 조회
@@ -93,12 +93,12 @@ public class UserServiceImpl implements UserService {
         // 1. JWT 토큰 유효성 검사
         if (!jwtTokenProvider.validateToken(refreshToken) ||
                 !jwtTokenProvider.isRefreshToken(refreshToken)) {
-            throw new UserException(ErrorDetail.INVALID_REFRESH_TOKEN);
+            throw new CustomException(ErrorDetail.INVALID_REFRESH_TOKEN);
         }
 
         // 2. DB에서 사용자 조회
         Users user = userRepository.findByUserRefreshToken(refreshToken)
-                .orElseThrow(() -> new UserException(ErrorDetail.INVALID_REFRESH_TOKEN));
+                .orElseThrow(() -> new CustomException(ErrorDetail.INVALID_REFRESH_TOKEN));
 
         // 3. 새로운 토큰들 발급
         String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId());
@@ -122,14 +122,14 @@ public class UserServiceImpl implements UserService {
 
         if (authentication == null || !authentication.isAuthenticated()) {
             log.error("인증 정보가 없습니다.");
-            throw new UserException(ErrorDetail.INVALID_TOKEN);
+            throw new CustomException(ErrorDetail.INVALID_TOKEN);
         }
 
         String email = authentication.getName();
         log.info("로그아웃 요청 - 이메일: {}", email);
 
         Users user = userRepository.findByUserEmail(email)
-                .orElseThrow(() -> new UserException(ErrorDetail.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorDetail.NOT_FOUND_USER));
 
         user.clearRefreshToken();
         userRepository.save(user);
@@ -143,14 +143,14 @@ public class UserServiceImpl implements UserService {
 
         if (authentication == null || !authentication.isAuthenticated()) {
             log.error("인증 정보가 없습니다.");
-            throw new UserException(ErrorDetail.INVALID_TOKEN);
+            throw new CustomException(ErrorDetail.INVALID_TOKEN);
         }
 
         String email = authentication.getName();
         log.info("회원 탈퇴 요청 - 이메일: {}", email);
 
         Users user = userRepository.findByUserEmail(email)
-                .orElseThrow(() -> new UserException(ErrorDetail.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorDetail.NOT_FOUND_USER));
 
         userRepository.delete(user);
         log.info("✅ 회원 탈퇴 완료: {}", email);

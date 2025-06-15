@@ -20,7 +20,6 @@ public enum ErrorDetail {
     // User
     NOT_FOUND_USER("U0001", HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     INVALID_VERIFICATION_CODE("U0001", HttpStatus.BAD_REQUEST, "인증코드가 올바르지 않습니다."),
-    USER_NOT_FOUND("U0002", HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
 
     // Workspace
     NOT_FOUND_WORKSPACE("W0001", HttpStatus.NOT_FOUND, "워크스페이스를 찾을 수 없습니다."),
