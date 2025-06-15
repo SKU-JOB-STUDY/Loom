@@ -2,7 +2,8 @@
 package com.sku.loom.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sku.loom.global.exception.token.EmptySubjectException;
+import com.sku.loom.global.exception.base.CustomException;
+import com.sku.loom.global.exception.constant.ErrorDetail;
 import com.sku.loom.global.service.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -144,7 +145,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("JWT 파싱 결과 - userId: {}", userId);
 
             if (userId == null) {
-                throw new EmptySubjectException();
+                throw new CustomException(ErrorDetail.EMPTY_SUBJECT);
             }
 
             log.info("Authentication 생성 전 - principal로 사용할 값: {}, 타입: {}",
