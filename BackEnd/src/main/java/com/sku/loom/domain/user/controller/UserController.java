@@ -3,6 +3,7 @@ package com.sku.loom.domain.user.controller;
 import com.sku.loom.domain.user.dto.AuthRequest;
 import com.sku.loom.domain.user.dto.AuthResponse;
 import com.sku.loom.domain.user.dto.EmailSendRequest;
+import com.sku.loom.domain.user.dto.EmailSendResponse;
 import com.sku.loom.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,9 +30,9 @@ public class UserController {
             description = "입력된 이메일로 6자리 인증코드를 발송합니다."
     )
     @ApiResponse(responseCode = "200", description = "인증코드 발송 성공")
-    public ResponseEntity<Void> sendEmailCode(@Valid @RequestBody EmailSendRequest request) {
-        userService.sendEmailVerificationCode(request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<EmailSendResponse> sendEmailCode(@Valid @RequestBody EmailSendRequest request) {
+        EmailSendResponse response = userService.sendEmailVerificationCode(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping

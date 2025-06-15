@@ -46,7 +46,8 @@ public class EmailService {
         }
     }
 
-    public void sendVerificationCode(String email) {
+    // 수정: void -> String 반환으로 변경
+    public String sendVerificationCode(String email) {
         String code = generateRandomCode();
 
         // 메모리에 저장
@@ -63,6 +64,9 @@ public class EmailService {
         sendEmail(email, code);
 
         log.info("인증코드 발송 완료: {} -> {}", email, code);
+
+        // 인증코드 반환
+        return code;
     }
 
     public boolean verifyCode(String email, String code) {

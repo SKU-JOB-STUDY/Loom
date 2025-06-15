@@ -3,6 +3,7 @@ package com.sku.loom.domain.user.service;
 import com.sku.loom.domain.user.dto.AuthRequest;
 import com.sku.loom.domain.user.dto.AuthResponse;
 import com.sku.loom.domain.user.dto.EmailSendRequest;
+import com.sku.loom.domain.user.dto.EmailSendResponse;
 import com.sku.loom.domain.user.entity.Users;
 import com.sku.loom.domain.user.repository.UserRepository;
 import com.sku.loom.global.exception.user.UserException;
@@ -28,10 +29,19 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
     private final JwtTokenProvider jwtTokenProvider;
 
+    // 수정: EmailSendResponse 반환
     @Override
-    public void sendEmailVerificationCode(EmailSendRequest request) {
+    public EmailSendResponse sendEmailVerificationCode(EmailSendRequest request) {
         log.info("이메일 인증코드 발송 요청: {}", request.getEmail());
-        emailService.sendVerificationCode(request.getEmail());
+
+        // EmailService에서 인증코드 받기
+        String verificationCode = emailService.sendVerificationCode(request.getEmail());
+
+        // 응답 생성 (인증코드 포함)
+        return EmailSendResponse.builder()
+                .message("인증코드가 발송되었습니다.")
+                .verificationCode(verificationCode)
+                .build();
     }
 
     @Override
@@ -145,5 +155,4 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
         log.info("✅ 회원 탈퇴 완료: {}", email);
     }
-
 }
