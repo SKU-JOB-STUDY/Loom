@@ -1,6 +1,8 @@
 package com.sku.loom.domain.channel.entity.section;
 
 
+import com.sku.loom.domain.workspace.entity.workspace.Workspaces;
+import com.sku.loom.domain.workspace.entity.workspace_profile.WorkspaceProfiles;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,6 +23,11 @@ public class Sections {
     @Column(name = "section_id", nullable = false)
     @Schema(description = "섹션 아이디", example = "1")
     private long sectionId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workspace_profile_id", nullable = false)
+    @Schema(description = "워크스페이스 프로필의 아이디", example = "1")
+    private WorkspaceProfiles workspaceProfile;
 
     @Column(name = "section_name", nullable = false)
     @Schema(description = "섹션 이름", example = "이름 10자 이하")
