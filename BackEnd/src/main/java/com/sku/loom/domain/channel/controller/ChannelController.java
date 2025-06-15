@@ -65,4 +65,6 @@ public class ChannelController {
 
         return ResponseEntity.ok(BaseResponse.create(HttpStatus.CREATED.value(), "섹션을 성공적으로 생성했습니다."));
     }
+
+
 }

@@ -24,7 +24,7 @@ public class SectionCustomRepositoryImpl implements SectionCustomRepository{
         QSections s = QSections.sections;
 
         return queryFactory
-                .select(Projections.constructor(SectionResponse.class, s.sectionName, s.sectionIcon))
+                .select(Projections.constructor(SectionResponse.class, s.sectionId, s.sectionName, s.sectionIcon))
                 .from(s)
                 .join(s.workspaceProfile, wp)
                 .join(wp.user, u)
