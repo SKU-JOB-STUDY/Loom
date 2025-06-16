@@ -15,10 +15,8 @@ import com.sku.loom.domain.workspace.entity.workspace_profile.role.WorkSpaceProf
 import com.sku.loom.domain.workspace.repository.workspace_profile.WorkspaceProfileCustomRepository;
 import com.sku.loom.domain.workspace.repository.workspace_profile.WorkspaceProfileJpaRepository;
 import com.sku.loom.domain.workspace.repository.workspace.WorkspaceJpaRepository;
-import com.sku.loom.global.exception.user.NotFoundUserException;
-import com.sku.loom.global.exception.workspace.AlreadyExistsWorkspaceUserException;
-import com.sku.loom.global.exception.workspace.NotFoundWorkspaceException;
-import com.sku.loom.global.exception.workspace.WorkspaceOwnerRequiredException;
+import com.sku.loom.global.exception.base.CustomException;
+import com.sku.loom.global.exception.constant.ErrorDetail;
 import com.sku.loom.global.service.s3.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Random;
@@ -54,8 +53,10 @@ public class WorkspaceServiceImpl implements WorkspaceService{
     @Override
     @Transactional
     public void postWorkspace(long userId, String workspaceName, MultipartFile image) throws IOException {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+
         Users user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new NotFoundUserException());
+                .orElseThrow(() -> new CustomException(ErrorDetail.NOT_FOUND_USER));
 
         // CREATE WORKSPACES
         String workspaceImg = "WORKSPACE BASIC S3 URL";
@@ -67,6 +68,8 @@ public class WorkspaceServiceImpl implements WorkspaceService{
                 .workspaceName(workspaceName)
                 .workspaceImg(workspaceImg)
                 .workspaceCode(generateWorkspaceCode())
+                .workspaceCreatedAt(now)
+                .workspaceUpdatedAt(now)
                 .build();
 
         workspaceJpaRepository.save(newWorkspace);
@@ -85,13 +88,13 @@ public class WorkspaceServiceImpl implements WorkspaceService{
     @Transactional
     public void postWorkspaceJoin(long userId, String workspaceCode) {
         Users newUser = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new NotFoundUserException());
+                .orElseThrow(() -> new CustomException(ErrorDetail.NOT_FOUND_USER));
         Workspaces targetWorkspace = workspaceJpaRepository.findByWorkspaceCode(workspaceCode)
-                .orElseThrow(() -> new NotFoundWorkspaceException());
+                .orElseThrow(() -> new CustomException(ErrorDetail.NOT_FOUND_WORKSPACE));
         Channels basicChannel = channelCustomRepository.findBasicChannelsByWorkspaceCode(workspaceCode);
 
         if(chkExists(newUser, targetWorkspace))
-            throw new AlreadyExistsWorkspaceUserException();
+            throw new CustomException(ErrorDetail.ALREADY_EXISTS_WORKSPACE_USER);
 
         // CREATE WORKSPACE-PROFILES
         WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(newUser, targetWorkspace, WorkSpaceProfileRole.MEMBER);
@@ -104,16 +107,16 @@ public class WorkspaceServiceImpl implements WorkspaceService{
     @Transactional
     public void postWorkspaceMembers(long userId, long workspaceId, String userEmail) {
         if(chkWorkspaceOwner(userId, workspaceId))
-            throw new WorkspaceOwnerRequiredException();
+            throw new CustomException(ErrorDetail.WORKSPACE_OWNER_REQUIRED);
 
         Users addUser = userRepository.findByUserEmail(userEmail)
-                .orElseThrow(() -> new NotFoundUserException());
+                .orElseThrow(() -> new CustomException(ErrorDetail.NOT_FOUND_USER));
         Workspaces targetWorkspace = workspaceJpaRepository.findByWorkspaceId(workspaceId)
-                .orElseThrow(() -> new NotFoundWorkspaceException());
+                .orElseThrow(() -> new CustomException(ErrorDetail.NOT_FOUND_WORKSPACE));
         Channels basicChannel = channelCustomRepository.findBasicChannelsByWorkspaceId(workspaceId);
 
         if(chkExists(addUser, targetWorkspace))
-            throw new AlreadyExistsWorkspaceUserException();
+            throw new CustomException(ErrorDetail.ALREADY_EXISTS_WORKSPACE_USER);
 
         // CREATE WORKSPACE-PROFILES
         WorkspaceProfiles newWorkspaceProfile = createWorkspaceProfile(addUser, targetWorkspace, WorkSpaceProfileRole.MEMBER);
@@ -149,10 +152,13 @@ public class WorkspaceServiceImpl implements WorkspaceService{
      * @return 생성된 channels
      */
     public Channels createChannel(String channelName, boolean channelOpened, boolean channelDefault) {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
         Channels newChannel = Channels.builder()
                 .channelName(channelName)
                 .channelOpened(channelOpened)
                 .channelDefault(channelDefault)
+                .channelCreatedAt(now)
+                .channelUpdatedAt(now)
                 .build();
 
         channelJpaRepository.save(newChannel);
@@ -167,6 +173,7 @@ public class WorkspaceServiceImpl implements WorkspaceService{
      * @return 생성된 workspace_profiles
      */
     private WorkspaceProfiles createWorkspaceProfile(Users user, Workspaces workspace, WorkSpaceProfileRole role) {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
         String workspaceProfileImg = "WORKSPACE PROFILES BASIC S3 URL";
 
         WorkspaceProfiles newWorkspaceProfile = WorkspaceProfiles.builder()
@@ -175,6 +182,8 @@ public class WorkspaceServiceImpl implements WorkspaceService{
                 .workspaceProfileName(user.getUserEmail().split("@")[0])
                 .workspaceProfileImg(workspaceProfileImg)
                 .workSpaceProfileRole(role)
+                .workspaceProfileCreatedAt(now)
+                .workspaceProfileUpdatedAt(now)
                 .build();
 
         workspaceProfileJpaRepository.save(newWorkspaceProfile);

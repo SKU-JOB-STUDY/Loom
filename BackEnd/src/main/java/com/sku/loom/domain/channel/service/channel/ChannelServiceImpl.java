@@ -1,4 +1,4 @@
-package com.sku.loom.domain.channel.service;
+package com.sku.loom.domain.channel.service.channel;
 
 import com.sku.loom.domain.channel.dto.request.ChannelCreateRequest;
 import com.sku.loom.domain.channel.dto.response.ChannelResponse;
@@ -42,6 +42,8 @@ public class ChannelServiceImpl implements ChannelService{
                 .channelName(request.getChannelName())
                 .channelOpened(request.isChannelOpened())
                 .channelDefault(false)
+                .channelCreatedAt(now)
+                .channelUpdatedAt(now)
                 .build();
         channelJpaRepository.save(newChannel);
 
