@@ -9,9 +9,11 @@ import com.sku.loom.domain.channel.repository.profile_channel.ProfileChannelJpaR
 import com.sku.loom.domain.user.entity.Users;
 import com.sku.loom.domain.user.repository.UserRepository;
 import com.sku.loom.domain.workspace.dto.response.WorkspaceResponse;
+import com.sku.loom.domain.workspace.entity.workspace.document.WorkspaceSearchDocument;
 import com.sku.loom.domain.workspace.entity.workspace_profile.WorkspaceProfiles;
 import com.sku.loom.domain.workspace.entity.workspace.Workspaces;
 import com.sku.loom.domain.workspace.entity.workspace_profile.role.WorkSpaceProfileRole;
+import com.sku.loom.domain.workspace.repository.workspace.WorkspaceElasticSearchRepository;
 import com.sku.loom.domain.workspace.repository.workspace_profile.WorkspaceProfileCustomRepository;
 import com.sku.loom.domain.workspace.repository.workspace_profile.WorkspaceProfileJpaRepository;
 import com.sku.loom.domain.workspace.repository.workspace.WorkspaceJpaRepository;
@@ -29,6 +31,7 @@ import java.security.SecureRandom;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -38,6 +41,7 @@ public class WorkspaceServiceImpl implements WorkspaceService{
 
     private final UserRepository userRepository;
     private final WorkspaceJpaRepository workspaceJpaRepository;
+    private final WorkspaceElasticSearchRepository workspaceElasticSearchRepository;
     private final WorkspaceProfileJpaRepository workspaceProfileJpaRepository;
     private final WorkspaceProfileCustomRepository workspaceProfileCustomRepository;
     private final ChannelJpaRepository channelJpaRepository;
@@ -89,7 +93,12 @@ public class WorkspaceServiceImpl implements WorkspaceService{
     public void postWorkspaceJoin(long userId, String workspaceCode) {
         Users newUser = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ErrorDetail.NOT_FOUND_USER));
-        Workspaces targetWorkspace = workspaceJpaRepository.findByWorkspaceCode(workspaceCode)
+        // Elasticsearch에서 workspaceCode로 workspaceId 조회
+        WorkspaceSearchDocument searchDocOpt = workspaceElasticSearchRepository.findByWorkspaceCode(workspaceCode)
+                .orElseThrow(() -> new CustomException(ErrorDetail.NOT_FOUND_WORKSPACE));
+
+        // MySQL에서 workspaceId로 워크스페이스 조회
+        Workspaces targetWorkspace = workspaceJpaRepository.findById(searchDocOpt.getWorkspaceId())
                 .orElseThrow(() -> new CustomException(ErrorDetail.NOT_FOUND_WORKSPACE));
         Channels basicChannel = channelCustomRepository.findBasicChannelsByWorkspaceCode(workspaceCode);
 
